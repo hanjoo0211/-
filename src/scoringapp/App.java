@@ -7,8 +7,13 @@ package scoringapp;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 public class App extends JFrame{
+	private int scoreSum = 0;
+	private int whichToCorrect = 0;
+	private int setDifficulty = 0;
+	
 	public App() {
 		setTitle("한국사능력검정시험 가채점 프로그램 2018320185 김한주");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,14 +51,6 @@ public class App extends JFrame{
 		toCorrectCombo.setBounds(500, 250, 200, 50);
 		panel.add(toCorrectCombo);
 		
-		// 채점회차 선택 리스너
-		toCorrectCombo.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//작성합시다
-			}
-		});
-		
 		// 난이도
 		JLabel difficulty = new JLabel("난이도");
 		difficulty.setFont(new Font("궁서", Font.PLAIN, 28));
@@ -83,31 +80,6 @@ public class App extends JFrame{
 		panel.add(difficulty1);
 		panel.add(difficulty2);
 		
-		// 난이도 선택 리스너
-		difficulty0.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if(difficulty0.isSelected()) {
-					//작성합시다
-				}
-			}
-		});
-		
-		difficulty1.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if(difficulty1.isSelected()) {
-					//작성합시다
-				}
-			}
-		});
-		
-		difficulty2.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if(difficulty2.isSelected()) {
-					//작성합시다
-				}
-			}
-		});
-		
 		// 채점방식
 		JLabel correctingMethod = new JLabel("채점방식");
 		correctingMethod.setFont(new Font("궁서", Font.PLAIN, 28));
@@ -136,23 +108,6 @@ public class App extends JFrame{
 		panel.add(correctBy1);
 		panel.add(correctBy5);
 		
-		// 채점방식 선택 리스너
-		correctBy1.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if(correctBy1.isSelected()) {
-					//작성합시다
-				}
-			}
-		});
-		
-		correctBy5.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if(correctBy5.isSelected()) {
-					//작성합시다
-				}
-			}
-		});
-		
 		// 진행버튼
 		JButton goButton = new JButton("채점하기");
 		goButton.setFont(new Font("궁서", Font.PLAIN, 28));
@@ -163,10 +118,171 @@ public class App extends JFrame{
 		goButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//작성합시다
+				// 채점회차 적용
+				whichToCorrect = toCorrectCombo.getSelectedIndex();
+				
+				// 난이도 적용
+				if(difficulty2.isSelected())
+					setDifficulty = 2;
+				else if (difficulty1.isSelected())
+					setDifficulty = 1;
+				else
+					setDifficulty = 0;
+				
+				// 화면 전환
+				panel.removeAll();
+				panel.repaint();
+				
+				// 채점 방식 적용
+				if(correctBy1.isSelected())
+					placeCorrecting1Panel(panel);
+				else
+					placeCorrecting5Panel(panel);
 			}
 		});
 	}
+	
+	// 채점 화면 구성 (1문제씩)
+	public void placeCorrecting1Panel(JPanel panel) {
+		panel.setLayout(null);
+		
+		// 제목
+		JLabel title = new JLabel("한국사능력검정시험 가채점 프로그램");
+		title.setFont(new Font("궁서", Font.PLAIN, 40));
+		title.setBounds(300, 50, 1200, 50);
+		panel.add(title);
+		
+		// 입력
+		Vector<ButtonGroup> AnswerGroup = new Vector<>(50); // 라디오버튼 그룹 벡터
+		Vector<JRadioButton> AnswerNumber = new Vector<>(5); // 5지선다 라디오버튼 벡터
+		Vector<Vector<JRadioButton>> QuestionNumber = new Vector<>(50); // 5지선다 벡터 포함하는 문제 번호 벡터
+		
+		for(int i=0; i<50; i++) {
+			JLabel QuestionNumbers = new JLabel(Integer.toString(i+1));
+			QuestionNumbers.setFont(new Font("궁서", Font.PLAIN, 20));
+			if (i<10) {
+				QuestionNumbers.setBounds(125, 200 + 30*i, 40, 20);
+			}
+			else if (i<20) {
+				QuestionNumbers.setBounds(325, -100 + 30*i, 40, 20);
+			}
+			else if (i<30) {
+				QuestionNumbers.setBounds(525, -400 + 30*i, 40, 20);
+			}
+			else if (i<40) {
+				QuestionNumbers.setBounds(725, -700 + 30*i, 40, 20);
+			}
+			else if (setDifficulty != 2){ // 초급은 문제가 40문제
+				QuestionNumbers.setBounds(925, -1000 + 30*i, 40, 20);
+			}
+			
+			panel.add(QuestionNumbers);
+			
+			AnswerGroup.add(i, new ButtonGroup());
+			QuestionNumber.add(i, AnswerNumber);
+			for(int j=0; j<5; j++) {
+				QuestionNumber.get(i).add(j, new JRadioButton());
+				AnswerGroup.get(i).add(QuestionNumber.get(i).get(j));
+				
+				if (i<10) {
+					AnswerNumber.get(j).setBounds(150 + 20*j, 200 + 30*i, 20, 20);
+				}
+				else if (i<20) {
+					AnswerNumber.get(j).setBounds(350 + 20*j, -100 + 30*i, 20, 20);
+				}
+				else if (i<30) {
+					AnswerNumber.get(j).setBounds(550 + 20*j, -400 + 30*i, 20, 20);
+				}
+				else if (i<40) {
+					AnswerNumber.get(j).setBounds(750 + 20*j, -700 + 30*i, 20, 20);
+				}
+				else if (setDifficulty != 2) {
+					AnswerNumber.get(j).setBounds(950 + 20*j, -1000 + 30*i, 20, 20);
+				}
+				
+				panel.add(AnswerNumber.get(j));
+			}
+		}
+		
+		// 진행버튼
+				JButton goButton = new JButton("결과보기");
+				goButton.setFont(new Font("궁서", Font.PLAIN, 28));
+				goButton.setBounds(550, 600, 180, 50);
+				panel.add(goButton);
+				
+				// 진행버튼 리스너
+				goButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// 결과화면 전환
+						panel.removeAll();
+						panel.repaint();
+						placeScorePanel(panel);
+					}
+				});
+	}
+	
+	// 채점화면 구성 (5문제씩)
+	public void placeCorrecting5Panel(JPanel panel) {
+		panel.setLayout(null);
+		
+		// 제목
+		JLabel title = new JLabel("한국사능력검정시험 가채점 프로그램");
+		title.setFont(new Font("궁서", Font.PLAIN, 40));
+		title.setBounds(300, 50, 1200, 50);
+		panel.add(title);
+		
+		// 입력
+		Vector<JTextField> AnswerText = new Vector<>(10);
+		
+		for(int i=0; i<10; i++) {
+			JLabel QuestionNumbers = new JLabel((5*i+1) + " ~ " + (5*i+5));
+			QuestionNumbers.setFont(new Font("궁서", Font.PLAIN, 20));
+			AnswerText.add(i, new JTextField(5));
+			AnswerText.get(i).setFont(new Font("굴림", Font.PLAIN, 16));
+			
+			if (i<8) {
+				QuestionNumbers.setBounds(565, 200 + 35*i, 100, 20);
+				AnswerText.get(i).setBounds(665, 200 + 35*i, 50, 20);
+			}
+			else if (setDifficulty != 2){
+				QuestionNumbers.setBounds(565, 200 + 35*i, 100, 20);
+				AnswerText.get(i).setBounds(665, 200 + 35*i, 50, 20);
+			}
+			panel.add(QuestionNumbers);
+			panel.add(AnswerText.get(i));
+		}
+		
+		// 진행버튼
+		JButton goButton = new JButton("결과보기");
+		goButton.setFont(new Font("궁서", Font.PLAIN, 28));
+		goButton.setBounds(550, 600, 180, 50);
+		panel.add(goButton);
+		
+		// 진행버튼 리스너
+		goButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 결과화면 전환
+				panel.removeAll();
+				panel.repaint();
+				placeScorePanel(panel);
+			}
+		});
+	}
+	
+	// 결과화면 구성
+		public void placeScorePanel(JPanel panel) {
+			panel.setLayout(null);
+			
+			// 제목
+			JLabel title = new JLabel("한국사능력검정시험 가채점 프로그램");
+			title.setFont(new Font("궁서", Font.PLAIN, 40));
+			title.setBounds(300, 50, 1200, 50);
+			panel.add(title);
+			
+			
+		}
 	public static void main(String[] args) {
 		new App();
 	}
