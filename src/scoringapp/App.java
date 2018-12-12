@@ -13,7 +13,7 @@ public class App extends JFrame{
 	private int scoreSum = 0; // 점수 합계
 	private int whichToCorrect = 0; // 채점회차
 	private int setDifficulty = 0; // 난이도
-	
+
 	private int[] CorrectAnswer = new int[50]; // 정답
 	private int[] ScorePerQuestion = new int[50]; // 배점
 	private int[] writtenAnswer = new int[50]; // 입력된 답안
@@ -135,7 +135,7 @@ public class App extends JFrame{
 					setDifficulty = 1;
 				else
 					setDifficulty = 0;
-				
+
 				// 데이터베이스에서 정답 추출
 				AnswerProcess(Database.answer[whichToCorrect][setDifficulty]);
 
@@ -149,7 +149,7 @@ public class App extends JFrame{
 				else
 					placeCorrecting5Panel(panel);
 
-				
+
 			}
 		});
 	}
@@ -226,28 +226,25 @@ public class App extends JFrame{
 		goButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				// 입력 데이터 저장
 				for(int i=0; i<50; i++) {
 					for(int j=0; j<5; j++) {
 						if(QuestionNumber.get(i).get(j).isSelected())
-							writtenAnswer[i] = j+1;
-						System.out.print(i + " " + j + " ");
-						System.out.println(QuestionNumber.get(i).get(j).isSelected());
-						
+							writtenAnswer[i] = j+1;						
 					}
-					
+
 				}
 
 				// 채점
 				CorrectingProcess(setDifficulty, CorrectAnswer, ScorePerQuestion, writtenAnswer);
-				
+
 				// 결과화면 전환
 				panel.removeAll();
 				panel.repaint();
 				placeScorePanel(panel);
-				
-				
+
+
 			}
 		});
 	}
@@ -261,6 +258,12 @@ public class App extends JFrame{
 		title.setFont(new Font("궁서", Font.PLAIN, 40));
 		title.setBounds(300, 50, 1200, 50);
 		panel.add(title);
+		
+		// 안내문
+		JLabel notice = new JLabel("답안을 5개 단위로 끊어서 입력하십시오. 모든 답안이 입력되지 않을 시 진행되지 않을 수 있습니다.");
+		notice.setFont(new Font("궁서", Font.PLAIN, 24));
+		notice.setBounds(100, 120, 1200, 50);
+		panel.add(notice);
 
 		// 입력
 		Vector<JTextField> AnswerText = new Vector<>(10);
@@ -294,21 +297,24 @@ public class App extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 입력 데이터 저장
-				for(int i=0; i<10; i++) {
+				int QuestionNumber = 10;
+				if(setDifficulty == 2)
+					QuestionNumber = 8;
+				for(int i=0; i<QuestionNumber; i++) {
 					char charAnswer[] = AnswerText.get(i).getText().toCharArray();
 					for(int j=0; j<5; j++)
 						writtenAnswer[5*i+j] = (int)(charAnswer[j]-48); // 숫자키의 아스키코드를 숫자로 변환
 				}
-				
+
 				// 채점
 				CorrectingProcess(setDifficulty, CorrectAnswer, ScorePerQuestion, writtenAnswer);
-				
+
 				// 결과화면 전환
 				panel.removeAll();
 				panel.repaint();
 				placeScorePanel(panel);
-				
-				
+
+
 			}
 		});
 	}
@@ -326,8 +332,62 @@ public class App extends JFrame{
 		// 점수 안내
 		JLabel score = new JLabel("당신의 점수는 " + scoreSum + "점 입니다.");
 		score.setFont(new Font("궁서", Font.PLAIN, 28));
-		score.setBounds(450, 350, 600, 50);
+		score.setBounds(450, 300, 600, 50);
 		panel.add(score);
+
+		// 등급 안내
+		JLabel rate = new JLabel();
+
+		switch(setDifficulty) {
+		case 0:
+			if(scoreSum >= 70)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 1급으로 합격하셨습니다.");
+			else if(scoreSum >= 60)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 2급으로 합격하셨습니다.");
+			else
+				rate = new JLabel("제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 합격하지 못했습니다.");
+			break;
+		case 1:
+			if(scoreSum >= 70)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 3급으로 합격하셨습니다.");
+			else if(scoreSum >= 60)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 4급으로 합격하셨습니다.");
+			else
+				rate = new JLabel("제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 합격하지 못했습니다.");
+			break;
+		case 2:
+			if(scoreSum >= 70)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 5급으로 합격하셨습니다.");
+			else if(scoreSum >= 60)
+				rate = new JLabel("축하합니다. 제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 6급으로 합격하셨습니다.");
+			else
+				rate = new JLabel("제 " + (41 - whichToCorrect) + "회 한국사능력검정시험에 합격하지 못했습니다.");
+			break;
+		}
+
+		rate.setFont(new Font("궁서", Font.PLAIN, 28));
+		if(scoreSum >= 60)
+			rate.setBounds(185, 400, 1000, 50);
+		else
+			rate.setBounds(300, 400, 1000, 50);
+		panel.add(rate);
+
+		// 다시하기 버튼
+		JButton goButton = new JButton("다시하기");
+		goButton.setFont(new Font("궁서", Font.PLAIN, 28));
+		goButton.setBounds(550, 600, 180, 50);
+		panel.add(goButton);
+
+		// 다시하기 버튼 리스너
+		goButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// 초기화면 전환
+				panel.removeAll();
+				panel.repaint();
+				placeSelectPanel(panel);
+			}
+		});
 	}
 
 	// 데이터베이스에서 정답을 추출하는 메소드
@@ -349,7 +409,7 @@ public class App extends JFrame{
 
 		if(difficulty == 2)
 			QuestionNumbers = 40; // 초급 문제 개수 40
-		
+
 		for(int i=0; i<QuestionNumbers; i++) {
 			if(writtenAnswer[i] == CorrectAnswer[i]) {
 				scoreSum += ScorePerQuestion[i];
