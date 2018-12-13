@@ -14,4 +14,4 @@ The other is scoring per 5 questions by writing 5-digits of answer.
 After scoring, it provides score, pass or fail, and wrong question numbers.
 If you want to rescore, click '다시하기(rescore)' button below the score notification.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/IL-pJM2GuXA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/IL-pJM2GuXA
