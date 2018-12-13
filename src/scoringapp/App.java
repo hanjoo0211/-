@@ -28,7 +28,7 @@ public class App extends JFrame{
 		Container content = getContentPane();
 
 		JPanel panel = new JPanel();
-		placeSelectPanel(panel);
+		placeSelectPanel(panel); // 초기 화면 불러오기
 		content.add(panel);
 
 		setVisible(true);
@@ -67,7 +67,7 @@ public class App extends JFrame{
 		// 난이도 선택
 		ButtonGroup difficultyGroup = new ButtonGroup();
 
-		JRadioButton difficulty0 = new JRadioButton("고급", true);
+		JRadioButton difficulty0 = new JRadioButton("고급", true); // 기본값
 		JRadioButton difficulty1 = new JRadioButton("중급");
 		JRadioButton difficulty2 = new JRadioButton("초급");
 
@@ -96,21 +96,17 @@ public class App extends JFrame{
 		// 채점방식 선택
 		ButtonGroup correctingMethodGroup = new ButtonGroup();
 
-		JRadioButton correctBy1 = new JRadioButton("1문제씩(선택식)", true);
+		JRadioButton correctBy1 = new JRadioButton("1문제씩(선택식)", true);  // 기본값
 		JRadioButton correctBy5 = new JRadioButton("5문제씩(입력식)");
-
 
 		correctBy1.setFont(new Font("궁서", Font.PLAIN, 28));
 		correctBy5.setFont(new Font("궁서", Font.PLAIN, 28));
 
-
 		correctBy1.setBounds(500, 450, 300, 50);
 		correctBy5.setBounds(800, 450, 300, 50);
 
-
 		correctingMethodGroup.add(correctBy1);
 		correctingMethodGroup.add(correctBy5);
-
 
 		panel.add(correctBy1);
 		panel.add(correctBy5);
@@ -148,8 +144,6 @@ public class App extends JFrame{
 					placeCorrecting1Panel(panel);
 				else
 					placeCorrecting5Panel(panel);
-
-
 			}
 		});
 	}
@@ -233,7 +227,6 @@ public class App extends JFrame{
 						if(QuestionNumber.get(i).get(j).isSelected())
 							writtenAnswer[i] = j+1;						
 					}
-
 				}
 
 				// 채점
@@ -243,8 +236,6 @@ public class App extends JFrame{
 				panel.removeAll();
 				panel.repaint();
 				placeScorePanel(panel);
-
-
 			}
 		});
 	}
@@ -258,7 +249,7 @@ public class App extends JFrame{
 		title.setFont(new Font("궁서", Font.PLAIN, 40));
 		title.setBounds(300, 50, 1200, 50);
 		panel.add(title);
-		
+
 		// 안내문
 		JLabel notice = new JLabel("답안을 5개 단위로 끊어서 입력하십시오. 모든 답안이 입력되지 않을 시 진행되지 않을 수 있습니다.");
 		notice.setFont(new Font("궁서", Font.PLAIN, 24));
@@ -278,7 +269,7 @@ public class App extends JFrame{
 				QuestionNumbers.setBounds(565, 200 + 35*i, 100, 20);
 				AnswerText.get(i).setBounds(665, 200 + 35*i, 50, 20);
 			}
-			else if (setDifficulty != 2){
+			else if (setDifficulty != 2){ // 중, 고급일때
 				QuestionNumbers.setBounds(565, 200 + 35*i, 100, 20);
 				AnswerText.get(i).setBounds(665, 200 + 35*i, 50, 20);
 			}
@@ -313,8 +304,6 @@ public class App extends JFrame{
 				panel.removeAll();
 				panel.repaint();
 				placeScorePanel(panel);
-
-
 			}
 		});
 	}
@@ -335,7 +324,7 @@ public class App extends JFrame{
 		score.setBounds(450, 300, 600, 50);
 		panel.add(score);
 
-		// 등급 안내
+		// 등급 안내: 70점 이상일 때 고/중/초급 각각 1/3/5급 합격, 60점 이상일때 2/4/6급 합격, 59점 이하 불합격
 		JLabel rate = new JLabel();
 
 		switch(setDifficulty) {
@@ -366,11 +355,31 @@ public class App extends JFrame{
 		}
 
 		rate.setFont(new Font("궁서", Font.PLAIN, 28));
+
 		if(scoreSum >= 60)
 			rate.setBounds(185, 400, 1000, 50);
 		else
 			rate.setBounds(300, 400, 1000, 50);
+
 		panel.add(rate);
+
+		// 오답 안내
+		int QuestionNumbers = 50;
+		if(setDifficulty == 2)
+			QuestionNumbers = 40;
+
+		String WrongNumbers = new String();
+		for(int i=0; i<QuestionNumbers; i++) {
+			if(isAnswerCorrect[i] == false && i!= QuestionNumbers-1)
+				WrongNumbers += (Integer.toString(i+1) + ", ");
+			else if(isAnswerCorrect[i] == false && i== QuestionNumbers-1)
+				WrongNumbers += Integer.toString(i+1);
+		}
+
+		JLabel wrongnum = new JLabel("오답: " + WrongNumbers);
+		wrongnum.setFont(new Font("궁서", Font.PLAIN, 14));
+		wrongnum.setBounds(50, 500, 1280, 50);
+		panel.add(wrongnum);
 
 		// 다시하기 버튼
 		JButton goButton = new JButton("다시하기");
@@ -391,10 +400,11 @@ public class App extends JFrame{
 	}
 
 	// 데이터베이스에서 정답을 추출하는 메소드
-	public void AnswerProcess(String answerData) { // answerData에는 Database.answer[n-9][0/1/2]가 들어갑니다.
+	public void AnswerProcess(String answerData) { // answerData에는 Database.answer[41-n][0/1/2]가 들어갑니다.
 		int QuestionNumber = 0; // 문제 번호
 
-		StringTokenizer st = new StringTokenizer(answerData, " \t\n\r");
+		// 문제 번호, 정답, 배점을 순서대로 추출합니다.
+		StringTokenizer st = new StringTokenizer(answerData, " \t\n\r"); 
 		while(st.hasMoreTokens()) {
 			QuestionNumber = Integer.parseInt(st.nextToken());
 			CorrectAnswer[QuestionNumber-1] = Integer.parseInt(st.nextToken());
@@ -418,7 +428,6 @@ public class App extends JFrame{
 			else
 				isAnswerCorrect[i] = false;
 		}
-
 	}
 	public static void main(String[] args) {
 		new App();

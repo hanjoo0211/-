@@ -2364,7 +2364,6 @@ public class Database {
 							"20	2	3	40	1	2"} // 9회차 초급
 	};
 	public static void main(String[] args) {
-		//System.out.println(answer[0][2]);
 
 	}
 
